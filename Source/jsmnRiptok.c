@@ -13,11 +13,36 @@
 #include <jsmnRipper.h>
 #include <errtra.h>
 
-void printTokenValue(char * tpath, char * jsonMsg, jsmntok_t * jsmnTokens)
+void printTokenValue(char * tpath, char * jsonMsg, jsmntok_t * jsmnTokenArray)
 {
-	char * tokenValue = getTokenValue(tpath, jsonMsg, jsmnTokens);
+	char * tokenValue = getTokenValue(tpath, jsonMsg, jsmnTokenArray);
 	printf("%s:%s:\n", tpath, tokenValue ? tokenValue : "Token not found");
 	free(tokenValue);
+}
+
+int getBestMusicScore(char * jsonMsg, jsmntok_t * jsonTokenArray)
+{
+	int bestMusicScore = 0;
+	int musicScore = 0;
+	int bestIndex = 0;
+	int index = 0;
+	char * tokenValue;
+	char tpath[25];
+	//char score[100];
+
+	sprintf(tpath, "%s%d%s", "metadata.music[", index, "].score");
+	while ((tokenValue = getTokenValue(tpath, jsonMsg, jsonTokenArray)) != NULL)
+	{
+		musicScore = atoi(tokenValue);
+		free(tokenValue);
+		if (bestMusicScore < musicScore)
+		{
+			bestMusicScore = musicScore;
+		}	bestIndex = index;
+		if (++index > 9) break;
+		sprintf(tpath, "%s%d%s", "metadata.music[", index, "].score");
+	}
+	return bestIndex;
 }
 
 int main(int argc, char ** argv)
@@ -34,48 +59,51 @@ int main(int argc, char ** argv)
 	//char * jsonMsg = "{\"status\":{\"msg\":\"Success\",\"code\":0,\"version\":\"1.0\"},\"metadata\":{\"music\":[{\"external_ids\":{\"isrc\":\"GBAJH0400007\",\"upc\":\"00724387455955\"},\"play_offset_ms\":6820,\"external_metadata\":{},\"release_date\":\"2013-06-28\",\"artists\":[{\"name\":\"Depeche Mode\"}],\"title\":\"Strangelove (Blind Mix)\",\"duration_ms\":391580,\"album\":{\"name\":\"Remixes 81>04\"},\"acrid\":\"0681bf55cf52ec93d09567f9a1ee0d26\",\"result_from\":1,\"score\":100},{\"external_ids\":{\"isrc\":\"GBAJH0000173\",\"upc\":\"093624032861\"},\"play_offset_ms\":7100,\"release_date\":\"2004-11-02\",\"external_metadata\":{\"spotify\":{\"album\":{\"id\":\"5331VtcJopcteVzgUHMH9R\"},\"artists\":[{\"id\":\"762310PdDnwsDxAQxzQkfX\"}],\"track\":{\"id\":\"1oNqhWK4rdbqgA1jaBLoU4\"}},\"deezer\":{\"album\":{\"id\":1346619},\"artists\":[{\"id\":545}],\"genres\":[{\"id\":132}],\"track\":{\"id\":14627099}},\"youtube\":{\"vid\":\"JIrm0dHbCDU\"}},\"artists\":[{\"name\":\"Depeche Mode\"}],\"title\":\"Strangelove\",\"genres\":[{\"name\":\"Pop\"}],\"label\":\"Reprise//Mute\",\"duration_ms\":393707,\"album\":{\"name\":\"Strangelove (U.S. Maxi Single)\"},\"acrid\":\"31489564c20465c5b8adbbbc90a852f0\",\"result_from\":1,\"score\":73}],\"timestamp_utc\":\"2018-05-19 21:51:26\"},\"cost_time\":0.28999996185303,\"result_type\":0}";
 	char * jsonMsg = "{\"status\":{\"msg\":\"Success\",\"code\":0,\"version\":\"1.0\"},\"metadata\":{\"music\":[{\"external_ids\":{\"isrc\":\"GBAJH0600292\",\"upc\":\"0094636010359\"},\"play_offset_ms\":33340,\"external_metadata\":{\"spotify\":{\"album\":{\"name\":\"Violator\",\"id\":\"1v6DV6Bt0kDsX1Vd1f7CEe\"},\"artists\":[{\"name\":\"Depeche Mode\",\"id\":\"762310PdDnwsDxAQxzQkfX\"}],\"track\":{\"name\":\"Enjoy The Silence - 2006 Digital Remaster\",\"id\":\"3enkvSCLKtGCCXfRyEK9Fl\"}},\"deezer\":{\"album\":{\"name\":\"The Best Of Depeche Mode Volume 1\",\"id\":86578},\"artists\":[{\"name\":\"Depeche Mode\",\"id\":545}],\"genres\":[{\"id\":85}],\"track\":{\"name\":\"Enjoy The Silence (Remastered Version Original)\",\"id\":726176}}},\"acrid\":\"f9377e92e75d5dee3f0cd90a9c163f6a\",\"artists\":[{\"name\":\"Depeche Mode\"}],\"label\":\"(C) 2006 Depeche Mode under exclusive licence to Mute Records LtdThis label copy information is the subject of copyright protection. All rights reserved.(C) 2006 Mute Records Ltd\",\"release_date\":\"1990-03-19\",\"title\":\"Enjoy The Silence - 2006 Digital Remaster\",\"duration_ms\":372813,\"album\":{\"name\":\"Violator\"},\"result_from\":3,\"score\":82},{\"external_ids\":{\"isrc\":\"GBAJH0602198\",\"upc\":\"093624425663\"},\"play_offset_ms\":33440,\"release_date\":\"2006-11-14\",\"external_metadata\":{\"musicstory\":{\"album\":{\"id\":\"162576\"},\"release\":{\"id\":\"815068\"},\"track\":{\"id\":\"2206341\"}},\"deezer\":{\"album\":{\"name\":\"The Best Of Depeche Mode Volume 1\",\"id\":\"86578\"},\"artists\":[{\"name\":\"Depeche Mode\",\"id\":\"545\"}],\"track\":{\"name\":\"Enjoy The Silence (Remastered Version) (Original)\",\"id\":\"726176\"}},\"spotify\":{\"album\":{\"name\":\"Classic Rock: Les Classiques de Marc Ysaye_90s00s\",\"id\":\"3fjD2coxF2SQwLRcjm0ctg\"},\"artists\":[{\"name\":\"Depeche Mode\",\"id\":\"762310PdDnwsDxAQxzQkfX\"}],\"track\":{\"name\":\"Enjoy The Silence\",\"id\":\"6pznJ6pWLmxc69pAUVfgRq\"}},\"lyricfind\":{\"lfid\":\"001-9836867\"},\"youtube\":{\"vid\":\"aGSKrC7dGcY\"}},\"artists\":[{\"name\":\"Depeche Mode\"}],\"genres\":[{\"name\":\"Alternative\"}],\"title\":\"Enjoy The Silence (Remastered Version) (Original)\",\"label\":\"Sire//Reprise\",\"duration_ms\":372000,\"album\":{\"name\":\"The Best Of Depeche Mode Volume 1\"},\"acrid\":\"4ac1fdcab64947a971dee1163f3f2374\",\"result_from\":3,\"score\":100}],\"timestamp_utc\":\"2018-05-19 22:08:18\"},\"cost_time\":0.0060000419616699,\"result_type\":0}";
 	jsmn_parser parser;
-	jsmntok_t * jsmnTokens;
+	jsmntok_t * jsmnTokenArray;
 
-	int tokenCount = parseJSON(jsonMsg, &parser, &jsmnTokens);
+	int tokenCount = parseJSON(jsonMsg, &parser, &jsmnTokenArray);
 	if (tokenCount < 0) return EXIT_FAILURE;
 
-	jsmntok_t * jsmnToken = jsmnTokens;
+	jsmntok_t * jsmnToken = jsmnTokenArray;
 	if (getJsmnTokenLen(jsmnToken) < 0) return JSMN_ERROR_PART;
 	if (!memcmp("", &jsonMsg[jsmnToken->start], (size_t)getJsmnTokenLen(jsmnToken))) return JSMN_ERROR_PART;
 	/**/
 	puts("*******************************************");
-	printJsmnTokens(jsonMsg, jsmnTokens);
+	printJsmnTokens(jsonMsg, jsmnTokenArray);
 	puts("*******************************************");
 
-	printTokenValue("status.msg", jsonMsg, jsmnTokens);
-	printTokenValue("status.code", jsonMsg, jsmnTokens);
-	printTokenValue("status.version", jsonMsg, jsmnTokens);
+	printTokenValue("status.msg", jsonMsg, jsmnTokenArray);
+	printTokenValue("status.code", jsonMsg, jsmnTokenArray);
+	printTokenValue("status.version", jsonMsg, jsmnTokenArray);
+
+	printf("Best Music Score index:%d\n", getBestMusicScore(jsonMsg, jsmnTokenArray));
+
 	puts("------------ 1st entry ------------");
-	printTokenValue("metadata.music[0].score", jsonMsg, jsmnTokens);
-	printTokenValue("metadata.music[0].album.name", jsonMsg, jsmnTokens);
-	printTokenValue("metadata.music[0].artists[0].name", jsonMsg, jsmnTokens);
-	printTokenValue("metadata.music[0].artists[1].name", jsonMsg, jsmnTokens);
-	printTokenValue("metadata.music[0].genres[0].name", jsonMsg, jsmnTokens);
-	printTokenValue("metadata.music[0].genres[1].name", jsonMsg, jsmnTokens);
-	printTokenValue("metadata.music[0].title", jsonMsg, jsmnTokens);
-	printTokenValue("metadata.music[0].release_date", jsonMsg, jsmnTokens);
-	printTokenValue("metadata.music[0].external_metadata.spotify.album.id", jsonMsg, jsmnTokens);
-	printTokenValue("metadata.music[0].external_metadata.spotify.track.id", jsonMsg, jsmnTokens);
-	printTokenValue("metadata.music[0].external_metadata.spotify.track.name", jsonMsg, jsmnTokens);
-	printTokenValue("metadata.music[0].external_metadata.youtube.vid", jsonMsg, jsmnTokens);
+	printTokenValue("metadata.music[0].score", jsonMsg, jsmnTokenArray);
+	printTokenValue("metadata.music[0].album.name", jsonMsg, jsmnTokenArray);
+	printTokenValue("metadata.music[0].artists[0].name", jsonMsg, jsmnTokenArray);
+	printTokenValue("metadata.music[0].artists[1].name", jsonMsg, jsmnTokenArray);
+	printTokenValue("metadata.music[0].genres[0].name", jsonMsg, jsmnTokenArray);
+	printTokenValue("metadata.music[0].genres[1].name", jsonMsg, jsmnTokenArray);
+	printTokenValue("metadata.music[0].title", jsonMsg, jsmnTokenArray);
+	printTokenValue("metadata.music[0].release_date", jsonMsg, jsmnTokenArray);
+	printTokenValue("metadata.music[0].external_metadata.spotify.album.id", jsonMsg, jsmnTokenArray);
+	printTokenValue("metadata.music[0].external_metadata.spotify.track.id", jsonMsg, jsmnTokenArray);
+	printTokenValue("metadata.music[0].external_metadata.spotify.track.name", jsonMsg, jsmnTokenArray);
+	printTokenValue("metadata.music[0].external_metadata.youtube.vid", jsonMsg, jsmnTokenArray);
 	puts("------------ 2nd entry ------------");
-	printTokenValue("metadata.music[1].score", jsonMsg, jsmnTokens);
-	printTokenValue("metadata.music[1].album.name", jsonMsg, jsmnTokens);
-	printTokenValue("metadata.music[1].artists[0].name", jsonMsg, jsmnTokens);
-	printTokenValue("metadata.music[1].artists[1].name", jsonMsg, jsmnTokens);
-	printTokenValue("metadata.music[1].genres[0].name", jsonMsg, jsmnTokens);
-	printTokenValue("metadata.music[1].genres[1].name", jsonMsg, jsmnTokens);
-	printTokenValue("metadata.music[1].title", jsonMsg, jsmnTokens);
-	printTokenValue("metadata.music[1].release_date", jsonMsg, jsmnTokens);
-	printTokenValue("metadata.music[1].external_metadata.spotify.album.id", jsonMsg, jsmnTokens);
-	printTokenValue("metadata.music[1].external_metadata.spotify.track.id", jsonMsg, jsmnTokens);
-	printTokenValue("metadata.music[1].external_metadata.spotify.track.name", jsonMsg, jsmnTokens);
-	printTokenValue("metadata.music[1].external_metadata.youtube.vid", jsonMsg, jsmnTokens);
-	free(jsmnTokens);
+	printTokenValue("metadata.music[1].score", jsonMsg, jsmnTokenArray);
+	printTokenValue("metadata.music[1].album.name", jsonMsg, jsmnTokenArray);
+	printTokenValue("metadata.music[1].artists[0].name", jsonMsg, jsmnTokenArray);
+	printTokenValue("metadata.music[1].artists[1].name", jsonMsg, jsmnTokenArray);
+	printTokenValue("metadata.music[1].genres[0].name", jsonMsg, jsmnTokenArray);
+	printTokenValue("metadata.music[1].genres[1].name", jsonMsg, jsmnTokenArray);
+	printTokenValue("metadata.music[1].title", jsonMsg, jsmnTokenArray);
+	printTokenValue("metadata.music[1].release_date", jsonMsg, jsmnTokenArray);
+	printTokenValue("metadata.music[1].external_metadata.spotify.album.id", jsonMsg, jsmnTokenArray);
+	printTokenValue("metadata.music[1].external_metadata.spotify.track.id", jsonMsg, jsmnTokenArray);
+	printTokenValue("metadata.music[1].external_metadata.spotify.track.name", jsonMsg, jsmnTokenArray);
+	printTokenValue("metadata.music[1].external_metadata.youtube.vid", jsonMsg, jsmnTokenArray);
+	free(jsmnTokenArray);
 	return EXIT_SUCCESS;
 }
